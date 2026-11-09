@@ -1,34 +1,93 @@
-# AI-Powered KPI Monitoring Dashboard for Enterprise BI
+AI-Powered KPI Monitoring Dashboard for Enterprise Business Intelligence
 
-Run: `pip install -r requirements.txt` then `python app.py` and open http://127.0.0.1:5000
+Project Overview
 
-| Project module | Where |
-|---|---|
-| 3. Dataset & preprocessing | `kpi_engine.generate()` / `load()` (CSV in `data/`, duplicates and nulls dropped) |
-| 4. KPI calculation | `kpi_engine.monthly()` / `kpi_cards()` (value, MoM, QoQ, YoY) |
-| 5. Dashboard | `app.py`, `templates/index.html` (Flask + Chart.js, six Power BI-style slicers) |
-| 6. AI/ML | `anomalies()` Isolation Forest on trend+seasonality residuals, with a driver explanation; `forecast()` linear trend + seasonality, 6 months, 80% range |
-| Insights | `insights()` auto-generated plain-language summary |
+The AI-Powered KPI Monitoring Dashboard is a web-based business intelligence application developed to monitor and analyze important business performance indicators (KPIs).
 
-To use real data, replace `data/business_data.csv` with the columns:
-date, region, category, revenue, cost, profit, customers, employee_score, efficiency.
+The dashboard helps users understand business performance through interactive charts, KPI cards, filters, and automated insights.
 
-## Slicers (Power BI slicer types)
+Objectives
 
-All slicers are AND-ed together; an empty selection means "no filter". Use *Clear all slicers* to reset.
+- Monitor important business KPIs.
+- Analyze sales and business performance.
+- Display data using interactive charts.
+- Provide region and category-based filtering.
+- Generate automated business insights.
+- Support better business decision-making.
 
-| Slicer | Type | Filters |
-|---|---|---|
-| Category | List (checkboxes, multi-select) | `category` |
-| Year | Dropdown | calendar year of `date` |
-| Month range | Date (dual-handle range) | `date`, by month |
-| Revenue per record | Numeric (dual-handle range) | `revenue` of each region/category/month row |
-| Region | Chiclet (toggle buttons, multi-select) | `region` |
-| Region > Category | Hierarchy (expandable tree) | specific region + category pairs |
+Technologies Used
 
-Notes
-- Forecast and anomaly detection need at least 12 months of history in the selection (`MIN_MONTHS`); with less, the
-  dashboard still shows KPIs and trends and says why the forecast is off. YoY needs 13 months, QoQ 6, MoM 2.
-- The Numeric slicer removes individual rows, so monthly totals for a narrowed range cover only the rows that match.
-- API: `/api/dashboard?regions=North,East&categories=Apparel&pairs=East|Apparel&year=2024&start=2024-01&end=2024-12&rmin=50000&rmax=90000`
-  (all optional; the old `?region=` and `?category=` parameters still work).
+- Python
+- Flask
+- Pandas
+- HTML
+- CSS
+- JavaScript
+- Chart.js
+- CSV Dataset
+
+Features
+
+- KPI Cards
+- Interactive Dashboard
+- Sales and Profit Analysis
+- Interactive Region and Category Filters
+- Data Visualization
+- Automated Business Insights
+
+Project Structure
+
+AI-Powered-KPI-Monitoring-Dashboard/
+│
+├── app.py
+├── kpi_engine.py
+├── business_data.csv
+├── requirements.txt
+├── README.md
+│
+└── templates/
+    └── index.html
+
+Installation and Execution
+
+1. Install Python
+
+Install Python on your system.
+
+2. Install Required Libraries
+
+Open the terminal in the project folder and execute:
+
+pip install -r requirements.txt
+
+3. Run the Application
+
+py app.py
+
+4. Open the Dashboard
+
+Open your browser and visit:
+
+http://127.0.0.1:5000/
+
+Dataset
+
+The project uses a CSV dataset containing business-related information for KPI calculation and visualization.
+
+Expected Output
+
+The application displays:
+
+- Business KPI cards
+- Interactive charts
+- Region and category filters
+- Updated dashboard values
+- Automated business insights
+
+Conclusion
+
+This project provides an interactive business intelligence dashboard that helps monitor KPIs, analyze business data, and understand organizational performance.
+
+Developed Using
+
+Python, Flask, Pandas, HTML, CSS, JavaScript and Chart.js.
