@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KPI Monitor</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#e9eef2;--panel:#fff;--ink:#14202b;--mute:#5d6b78;--line:#d3dbe2;--teal:#0f7b6c;--red:#c9304a;--amber:#b87a0a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+header{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:end;padding:22px 28px 8px}
+h1{font:600 24px "IBM Plex Serif",Georgia,serif;margin:0}h1+p{margin:2px 0 0;color:var(--mute)}
+select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;margin:0 12px 0 8px}
+main{padding:12px 28px 32px;display:grid;gap:16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.card{text-align:left;font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;cursor:pointer}
+.card.on{border-color:var(--teal);box-shadow:inset 0 -3px 0 var(--teal)}.card:focus-visible{outline:2px solid var(--teal)}
+.card small{color:var(--mute)}.card b{display:block;font-size:26px;font-weight:600;margin:2px 0 6px}
+.d{font-size:12.5px;color:var(--mute)}.d span{margin-right:10px}.up{color:var(--teal)}.dn{color:var(--red)}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:16px}@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}
+h2{font-size:15px;font-weight:600;margin:0 0 10px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.two{grid-template-columns:1fr}}
+ul{margin:0;padding-left:18px}li{margin-bottom:8px}li.al{color:var(--red)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mute);font-weight:500}
+.wrap{position:relative;height:340px}.wrap.s{height:200px}
+
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;color:var(--mute);font-size:13.5px}
+.bar button{font:inherit;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);cursor:pointer}.bar button:hover{border-color:var(--teal)}
+.slicers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}@media(max-width:820px){.slicers{grid-template-columns:1fr 1fr}}@media(max-width:520px){.slicers{grid-template-columns:1fr}}
+.sl{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:0;min-width:0}
+.sl legend{padding:0 6px;font-weight:600;font-size:14px}.sl legend small{font-weight:400;color:var(--mute);margin-left:6px}
+.sl label.o{display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer}
+.sl input[type=checkbox]{accent-color:var(--teal);width:16px;height:16px}
+.sl select{width:100%;margin:4px 0 0}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chip{font:inherit;padding:8px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);cursor:pointer}
+.chip[aria-pressed=true]{background:var(--teal);border-color:var(--teal);color:#fff}.chip:focus-visible,.tg:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+.rng{display:flex;justify-content:space-between;font-size:13px;color:var(--mute)}
+.dual{position:relative;height:28px;margin:4px 2px}
+.dual .tr,.dual .fl{position:absolute;top:12px;height:4px;border-radius:2px}.dual .tr{left:0;right:0;background:var(--line)}.dual .fl{background:var(--teal)}
+.dual input{position:absolute;left:0;top:4px;width:100%;height:20px;margin:0;background:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+.dual input::-webkit-slider-runnable-track{background:none}.dual input::-moz-range-track{background:none}
+.dual input::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid var(--teal);cursor:pointer}
+.dual input::-moz-range-thumb{pointer-events:auto;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--teal);cursor:pointer}
+.dual input:focus-visible::-webkit-slider-thumb{outline:2px solid var(--teal);outline-offset:2px}
+.tree{list-style:none;padding:0;margin:0}.tree li{margin:0}.tree ul{list-style:none;padding-left:26px;margin:0}
+.tg{font:inherit;border:0;background:none;cursor:pointer;width:18px;padding:0;color:var(--mute)}
+.node{display:flex;align-items:center;gap:4px;padding:2px 0}.node label{display:flex;align-items:center;gap:8px;cursor:pointer}
+.empty{background:#fff6e5;border:1px solid var(--amber);color:#6b4500;border-radius:8px;padding:14px 16px}
+[hidden]{display:none!important}
+</style></head><body>
+<header><div><h1>KPI Monitor</h1><p>Enterprise performance, anomalies and 6-month forecast</p></div>
+</header>
+<main>
+<section class="slicers" id="slicers" aria-label="Slicers"></section>
+<div class="bar"><span id="status" aria-live="polite"></span><button type="button" id="clear">Clear all slicers</button></div>
+<div class="empty" id="empty" role="status" hidden>No records match the current slicers. Loosen a selection or use “Clear all slicers”.</div>
+<div id="body" style="display:grid;gap:16px">
+<section class="cards" id="cards"></section>
+<section class="grid">
+ <div class="panel"><h2 id="ct"></h2><div class="wrap"><canvas id="main"></canvas></div></div>
+ <div class="panel"><h2>Automated insights</h2><ul id="ins"></ul></div>
+</section>
+<section class="grid">
+ <div class="panel"><h2>Detected anomalies</h2><table><thead><tr><th>Month</th><th>KPI</th><th>vs expected</th><th>Main driver</th></tr></thead><tbody id="an"></tbody></table></div>
+ <div class="panel two"><div><h2>Revenue by region (12 mo)</h2><div class="wrap s"><canvas id="rg"></canvas></div></div>
+ <div><h2>Revenue by category (12 mo)</h2><div class="wrap s"><canvas id="cg"></canvas></div></div></div>
+</section>
+</div>
+</main>
+<script>
+const $=s=>document.querySelector(s),M={{ meta|tojson }};let D,sel="revenue",ch={},timer;
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=(k,v)=>k==="efficiency"?v.toFixed(1)+"%":k==="employee_score"?v.toFixed(1)+"/100":v>=1e6?(v/1e6).toFixed(2)+"M":v>=1e3?(v/1e3).toFixed(1)+"K":Math.round(v);
+const pc=v=>v==null?`<span class="up" style="color:var(--mute)">n/a</span>`:`<span class="${v>=0?"up":"dn"}">${v>=0?"▲":"▼"} ${Math.abs(v).toFixed(1)}%</span>`;
+function draw(id,cfg){ch[id]?.destroy();ch[id]=new Chart($("#"+id),cfg)}
+
+/* ---------- slicer state ---------- */
+const NM=M.months.length-1;
+const fresh=()=>({cats:new Set(),regs:new Set(),pairs:new Set(),year:"All",from:0,to:NM,rmin:M.rev_min,rmax:M.rev_max});
+let S=fresh();
+const fk=v=>fmt("revenue",v), ml=i=>M.months[i];
+function query(){
+ const p=new URLSearchParams();
+ if(S.regs.size)p.set("regions",[...S.regs]);if(S.cats.size)p.set("categories",[...S.cats]);if(S.pairs.size)p.set("pairs",[...S.pairs]);
+ if(S.year!=="All")p.set("year",S.year);
+ if(S.from>0)p.set("start",ml(S.from));if(S.to<NM)p.set("end",ml(S.to));
+ if(S.rmin>M.rev_min)p.set("rmin",S.rmin);if(S.rmax<M.rev_max)p.set("rmax",S.rmax);
+ return p.toString()}
+function changed(){clearTimeout(timer);timer=setTimeout(load,150)}
+
+function slicer(title,type,inner){const f=document.createElement("fieldset");f.className="sl";f.innerHTML=`<legend>${title}<small>${type}</small></legend>`;f.append(inner);$("#slicers").append(f);return f}
+
+/* dual-handle range used by the Date and Numeric slicers */
+function dual({min,max,step,lo,hi,label,onInput}){
+ const w=document.createElement("div"),top=document.createElement("div");
+ top.className="rng";top.innerHTML="<span></span><span></span>";
+ const box=document.createElement("div");box.className="dual";
+ box.innerHTML='<div class="tr"></div><div class="fl"></div>';
+ const a=document.createElement("input"),b=document.createElement("input");
+ for(const [i,v,n] of [[a,lo,"Minimum"],[b,hi,"Maximum"]]){i.type="range";i.min=min;i.max=max;i.step=step;i.value=v;i.setAttribute("aria-label",n+" "+label);box.append(i)}
+ const paint=()=>{const x=+a.value,y=+b.value,r=max-min||1,f=box.querySelector(".fl");
+  f.style.left=(x-min)/r*100+"%";f.style.right=(100-(y-min)/r*100)+"%";
+  top.children[0].textContent=label(x);top.children[1].textContent=label(y);a.style.zIndex=x>=max-(max-min)*.1?3:1};
+ a.oninput=()=>{if(+a.value>+b.value)a.value=b.value;paint();onInput(+a.value,+b.value)};
+ b.oninput=()=>{if(+b.value<+a.value)b.value=a.value;paint();onInput(+a.value,+b.value)};
+ paint();w.append(top,box);return w}
+
+function buildSlicers(){
+ $("#slicers").innerHTML="";
+ // 1 List: Category (multi-select checkboxes)
+ const list=document.createElement("div");
+ M.categories.forEach(c=>{const l=document.createElement("label");l.className="o";l.innerHTML=`<input type="checkbox" ${S.cats.has(c)?"checked":""}> <span>${esc(c)}</span>`;
+  l.firstChild.onchange=e=>{e.target.checked?S.cats.add(c):S.cats.delete(c);changed()};list.append(l)});
+ slicer("Category","List",list);
+ // 2 Dropdown: Year
+ const dd=document.createElement("select");dd.setAttribute("aria-label","Year");
+ dd.innerHTML=["All",...M.years].map(y=>`<option ${String(y)===S.year?"selected":""}>${y}</option>`).join("");
+ dd.onchange=()=>{S.year=dd.value;changed()};slicer("Year","Dropdown",dd);
+ // 3 Date: month range
+ slicer("Month range","Date",dual({min:0,max:NM,step:1,lo:S.from,hi:S.to,label:ml,onInput:(x,y)=>{S.from=x;S.to=y;changed()}}));
+ // 4 Numeric: revenue per record
+ slicer("Revenue per record","Numeric",dual({min:M.rev_min,max:M.rev_max,step:M.rev_step,lo:S.rmin,hi:S.rmax,label:fk,onInput:(x,y)=>{S.rmin=x;S.rmax=y;changed()}}));
+ // 5 Chiclet: Region buttons
+ const ch_=document.createElement("div");ch_.className="chips";
+ M.regions.forEach(r=>{const b=document.createElement("button");b.type="button";b.className="chip";b.textContent=r;b.setAttribute("aria-pressed",S.regs.has(r));
+  b.onclick=()=>{S.regs.has(r)?S.regs.delete(r):S.regs.add(r);b.setAttribute("aria-pressed",S.regs.has(r));changed()};ch_.append(b)});
+ slicer("Region","Chiclet",ch_);
+ // 6 Hierarchy: Region > Category
+ const tree=document.createElement("ul");tree.className="tree";tree.setAttribute("role","tree");
+ M.regions.forEach(r=>{
+  const keys=M.categories.map(c=>r+"|"+c),li=document.createElement("li"),node=document.createElement("div"),kids=document.createElement("ul");
+  node.className="node";kids.hidden=!keys.some(k=>S.pairs.has(k));
+  const tg=document.createElement("button");tg.type="button";tg.className="tg";tg.textContent=kids.hidden?"▸":"▾";tg.setAttribute("aria-expanded",!kids.hidden);tg.setAttribute("aria-label","Expand "+r);
+  tg.onclick=()=>{kids.hidden=!kids.hidden;tg.textContent=kids.hidden?"▸":"▾";tg.setAttribute("aria-expanded",!kids.hidden)};
+  const pl=document.createElement("label"),pcb=document.createElement("input");pcb.type="checkbox";pl.append(pcb," ",Object.assign(document.createElement("span"),{textContent:r}));
+  const cbs=keys.map((k,i)=>{const cl=document.createElement("label"),cb=document.createElement("input"),k_=document.createElement("li");cb.type="checkbox";cb.checked=S.pairs.has(k);
+   cl.className="o";cl.append(cb," ",Object.assign(document.createElement("span"),{textContent:M.categories[i]}));k_.append(cl);kids.append(k_);
+   cb.onchange=()=>{cb.checked?S.pairs.add(k):S.pairs.delete(k);sync();changed()};return cb});
+  const sync=()=>{const n=cbs.filter(c=>c.checked).length;pcb.checked=n===cbs.length;pcb.indeterminate=n>0&&n<cbs.length};
+  pcb.onchange=()=>{keys.forEach((k,i)=>{cbs[i].checked=pcb.checked;pcb.checked?S.pairs.add(k):S.pairs.delete(k)});sync();kids.hidden=false;tg.textContent="▾";tg.setAttribute("aria-expanded",true);changed()};
+  sync();node.append(tg,pl);li.append(node,kids);tree.append(li)});
+ slicer("Region › Category","Hierarchy",tree);
+}
+
+/* ---------- data + render ---------- */
+let ctl;
+async function load(){
+ ctl?.abort();ctl=new AbortController();   // a newer slicer change cancels the in-flight request, so stale data never overwrites fresh
+ try{D=await(await fetch("/api/dashboard?"+query(),{signal:ctl.signal})).json()}catch(e){if(e.name==="AbortError")return;throw e}
+ $("#empty").hidden=!D.empty;$("#body").hidden=!!D.empty;
+ $("#status").textContent=D.empty?"0 records":`${D.rows} records · ${D.months} months`;
+ if(!D.empty)render()}
+function render(){
+ $("#cards").innerHTML=Object.entries(D.cards).map(([k,c])=>`<button class="card ${k===sel?"on":""}" data-k="${k}"><small>${c.label}</small><b>${fmt(k,c.value)}</b><div class="d"><span>MoM ${pc(c.mom)}</span><span>QoQ ${pc(c.qoq)}</span><span>YoY ${pc(c.yoy)}</span></div></button>`).join("");
+ document.querySelectorAll(".card").forEach(b=>b.onclick=()=>{sel=b.dataset.k;render()});
+ const f=D.forecast[sel],H=D.series.dates,v=D.series[sel],last=v[v.length-1],FD=f?f.dates:[],n=FD.length,pad=a=>Array(H.length-1).fill(null).concat(a);
+ $("#ct").textContent=D.cards[sel].label+(f?": history, anomalies and forecast":": history (forecast needs 12+ months)");
+ const sets=[{label:"Actual",data:v.concat(Array(n).fill(null)),borderColor:"#14202b",borderWidth:2,pointRadius:v.length<3?4:0,tension:.25}];
+ if(f)sets.push(
+  {label:"Forecast",data:pad([last].concat(f.values)),borderColor:"#b87a0a",borderDash:[6,4],pointRadius:0,tension:.25},
+  {label:"Range low",data:pad([last].concat(f.lo)),borderWidth:0,pointRadius:0},
+  {label:"80% range",data:pad([last].concat(f.hi)),borderWidth:0,pointRadius:0,fill:"-1",backgroundColor:"rgba(184,122,10,.15)"});
+ sets.push({label:"Anomaly",data:H.concat(FD).map(d=>{const a=D.anomalies.find(x=>x.kpi===sel&&x.date===d);return a?a.value:null}),showLine:false,pointRadius:7,pointBackgroundColor:"#c9304a",borderColor:"#c9304a"});
+ draw("main",{type:"line",data:{labels:H.concat(FD),datasets:sets},
+  options:{maintainAspectRatio:false,interaction:{mode:"index",intersect:false},scales:{y:{ticks:{callback:x=>fmt(sel,x)}},x:{ticks:{maxTicksLimit:10}}},plugins:{legend:{labels:{filter:i=>i.text!=="Range low"}}}}});
+ $("#ins").innerHTML=D.insights.map(t=>`<li class="${t.startsWith("Alert")?"al":""}">${esc(t)}</li>`).join("");
+ $("#an").innerHTML=D.anomalies.slice(0,8).map(a=>`<tr><td>${a.date}</td><td>${esc(a.label)}</td><td class="${a.deviation>=0?"up":"dn"}">${a.deviation>=0?"+":""}${a.deviation.toFixed(0)}%</td><td>${esc(a.driver)}</td></tr>`).join("")||"<tr><td colspan=4>No anomalies for this selection.</td></tr>";
+ const bar=(id,o)=>draw(id,{type:"bar",data:{labels:Object.keys(o),datasets:[{data:Object.values(o),backgroundColor:"#0f7b6c"}]},options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{callback:x=>fmt("revenue",x)}}}}});
+ bar("rg",D.by_region);bar("cg",D.by_category);
+}
+$("#clear").onclick=()=>{S=fresh();buildSlicers();load()};
+buildSlicers();load();
+</script></body></html>
